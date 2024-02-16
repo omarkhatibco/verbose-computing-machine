@@ -52,8 +52,10 @@ export default async function Index() {
             <TabPanels>
               {Object.entries(cites).map(([key, value]) => (
                 <CityPanel
+                  key={key}
                   forcast={forcasts?.find(item => item.location === value.backendName)}
                   inventory={inventories?.find(item => item.location === value.backendName)}
+                  cityName={value.weatherName}
                 />
               ))}
             </TabPanels>
