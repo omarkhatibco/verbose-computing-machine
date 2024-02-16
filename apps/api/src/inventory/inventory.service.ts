@@ -20,8 +20,15 @@ export class InventoryService {
     return `This action returns a #${id} inventory`
   }
 
-  update(id: number, updateInventoryDto: UpdateInventoryDto) {
-    return `This action updates a #${id} inventory`
+  async update(id: number, updateInventoryDto: UpdateInventoryDto) {
+    const { currentStock } = updateInventoryDto
+
+    const newData = await this.db.incoming_inventory.update({
+      where: { id },
+      data: { currentStock: Number(currentStock) },
+    })
+    console.log(newData)
+    return newData
   }
 
   remove(id: number) {

@@ -4,11 +4,7 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Flex,
-  Grid,
-  SimpleGrid,
   Stat,
-  StatArrow,
   StatGroup,
   StatHelpText,
   StatLabel,
@@ -22,6 +18,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import { Forcast, Inventory } from '../types'
 import { getInventoryStats } from '../utls'
 import { ForcastedWeather } from './ForcastedWeather'
+import { UpdateStockButton } from './UpdateStockButton'
 
 const ISO_FORMAT = 'YYYY-MM-DD'
 
@@ -36,7 +33,7 @@ type Props = {
 export const CityPanel: FC<Props> = ({
   cityName,
   forcast: { forecasted_sales, date },
-  inventory: { currentStock, incomingStock },
+  inventory: { currentStock, incomingStock, id },
 }) => {
   const firstData = dayjs(date)
   const endDate = dayjs(date).add(2, 'week')
@@ -76,9 +73,10 @@ export const CityPanel: FC<Props> = ({
           <Stat>
             <StatLabel>Current Stock</StatLabel>
             <StatNumber>{currentStock}</StatNumber>
-            <StatHelpText>
-              {formatedFirstData} - {formatedEndData}
-            </StatHelpText>
+            <UpdateStockButton
+              currentValue={currentStock}
+              id={id}
+            />
           </Stat>
           <Stat>
             <StatLabel>Incoming Stock</StatLabel>
