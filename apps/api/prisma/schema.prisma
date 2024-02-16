@@ -1,0 +1,403 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model auth_group {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique @db.VarChar(150)
+  auth_group_permissions auth_group_permissions[]
+  auth_user_groups       auth_user_groups[]
+
+  @@index([name], map: "auth_group_name_a6ea08ec_like")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_group_permissions {
+  id              BigInt          @id @default(autoincrement())
+  group_id        Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm")
+  auth_group      auth_group      @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id")
+
+  @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
+  @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
+  @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_permission {
+  id                         Int                          @id @default(autoincrement())
+  name                       String                       @db.VarChar(255)
+  content_type_id            Int
+  codename                   String                       @db.VarChar(100)
+  auth_group_permissions     auth_group_permissions[]
+  django_content_type        django_content_type          @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_permission_content_type_id_2f476e4b_fk_django_co")
+  auth_user_user_permissions auth_user_user_permissions[]
+
+  @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
+  @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+}
+
+model auth_user {
+  id                         Int                          @id @default(autoincrement())
+  password                   String                       @db.VarChar(128)
+  last_login                 DateTime?                    @db.Timestamptz(6)
+  is_superuser               Boolean
+  username                   String                       @unique @db.VarChar(150)
+  first_name                 String                       @db.VarChar(150)
+  last_name                  String                       @db.VarChar(150)
+  email                      String                       @db.VarChar(254)
+  is_staff                   Boolean
+  is_active                  Boolean
+  date_joined                DateTime                     @db.Timestamptz(6)
+  auth_user_groups           auth_user_groups[]
+  auth_user_user_permissions auth_user_user_permissions[]
+  django_admin_log           django_admin_log[]
+
+  @@index([username], map: "auth_user_username_6821ab7c_like")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_groups {
+  id         BigInt     @id @default(autoincrement())
+  user_id    Int
+  group_id   Int
+  auth_group auth_group @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_group_id_97559544_fk_auth_group_id")
+  auth_user  auth_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_user_id_6a12ed8b_fk_auth_user_id")
+
+  @@unique([user_id, group_id], map: "auth_user_groups_user_id_group_id_94350c0c_uniq")
+  @@index([group_id], map: "auth_user_groups_group_id_97559544")
+  @@index([user_id], map: "auth_user_groups_user_id_6a12ed8b")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_user_permissions {
+  id              BigInt          @id @default(autoincrement())
+  user_id         Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm")
+  auth_user       auth_user       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id")
+
+  @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
+  @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
+  @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model django_admin_log {
+  id                  Int                  @id @default(autoincrement())
+  action_time         DateTime             @db.Timestamptz(6)
+  object_id           String?
+  object_repr         String               @db.VarChar(200)
+  action_flag         Int                  @db.SmallInt
+  change_message      String
+  content_type_id     Int?
+  user_id             Int
+  django_content_type django_content_type? @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_content_type_id_c4bce8eb_fk_django_co")
+  auth_user           auth_user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_user_id_c564eba6_fk_auth_user_id")
+
+  @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
+  @@index([user_id], map: "django_admin_log_user_id_c564eba6")
+}
+
+model django_content_type {
+  id               Int                @id @default(autoincrement())
+  app_label        String             @db.VarChar(100)
+  model            String             @db.VarChar(100)
+  auth_permission  auth_permission[]
+  django_admin_log django_admin_log[]
+
+  @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
+}
+
+model django_migrations {
+  id      BigInt   @id @default(autoincrement())
+  app     String   @db.VarChar(255)
+  name    String   @db.VarChar(255)
+  applied DateTime @db.Timestamptz(6)
+}
+
+model django_session {
+  session_key  String   @id @db.VarChar(40)
+  session_data String
+  expire_date  DateTime @db.Timestamptz(6)
+
+  @@index([expire_date], map: "django_session_expire_date_a5c62663")
+  @@index([session_key], map: "django_session_session_key_c0390e0f_like")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model energy_balance_table {
+  eb_id        Bytes        @id(map: "uniqu_eb_id")
+  system_id    Bytes
+  method       String       @db.VarChar(255)
+  name         String       @db.VarChar(255)
+  status       String       @db.VarChar(255)
+  properties   Json
+  created_at   DateTime     @default(now()) @db.Timestamp(6)
+  created_by   String?      @db.VarChar(255)
+  updated_at   DateTime?    @db.Timestamp(6)
+  updated_by   String?      @db.VarChar(255)
+  system_table system_table @relation(fields: [system_id], references: [system_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_energy_balance_table_system_table")
+}
+
+model energy_balance_table_audit {
+  eb_id      Bytes
+  version    Int
+  system_id  Bytes
+  method     String    @db.VarChar(255)
+  name       String    @db.VarChar(255)
+  status     String    @db.VarChar(255)
+  properties Json
+  created_at DateTime  @db.Timestamp(6)
+  created_by String?   @db.VarChar(255)
+  updated_at DateTime? @db.Timestamp(6)
+  updated_by String?   @db.VarChar(255)
+  deleted_at DateTime? @db.Timestamp(6)
+  deleted_by String?   @db.VarChar(255)
+
+  @@id([eb_id, version])
+}
+
+model forecast {
+  id                        Int       @id(map: "PK_aee67ed6c40e832a806c429a2ec") @default(autoincrement())
+  date                      DateTime? @db.Timestamp(6)
+  location                  String?   @db.VarChar
+  forecasted_sales_quantity Int?
+}
+
+model forecasts {
+  forecasted_sales Int?
+  createdAt        DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime  @default(now()) @db.Timestamp(6)
+  id               Int       @id(map: "PK_caa4d5aec48032eb9d2ce8535f8") @default(autoincrement())
+  location         String?   @db.VarChar
+  date             DateTime? @db.Date
+}
+
+model geometry_table {
+  geometry_id                                                                    Bytes                   @id
+  system_id                                                                      Bytes?
+  geometry                                                                       Json
+  name                                                                           String                  @db.VarChar(255)
+  geometry_id_start                                                              Bytes?
+  geometry_id_end                                                                Bytes?
+  properties                                                                     Json
+  created_at                                                                     DateTime                @default(now()) @db.Timestamp(6)
+  created_by                                                                     String?                 @db.VarChar(255)
+  updated_at                                                                     DateTime?               @db.Timestamp(6)
+  updated_by                                                                     String?                 @db.VarChar(255)
+  system_table                                                                   system_table?           @relation(fields: [system_id], references: [system_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_geometry_table_system_table")
+  geometry_within_table_geometry_within_table_geometry_idTogeometry_table        geometry_within_table[] @relation("geometry_within_table_geometry_idTogeometry_table")
+  geometry_within_table_geometry_within_table_geometry_id_withinTogeometry_table geometry_within_table[] @relation("geometry_within_table_geometry_id_withinTogeometry_table")
+  system_geometry_table                                                          system_geometry_table[]
+
+  @@index([system_id], map: "idx_geometry_table_system_id")
+}
+
+model geometry_table_audit {
+  geometry_id       Bytes
+  version           Int
+  system_id         Bytes?
+  geometry          Json
+  name              String    @db.VarChar(255)
+  geometry_id_start Bytes?
+  geometry_id_end   Bytes?
+  properties        Json
+  created_at        DateTime  @db.Timestamp(6)
+  created_by        String?   @db.VarChar(255)
+  updated_at        DateTime? @db.Timestamp(6)
+  updated_by        String?   @db.VarChar(255)
+  deleted_at        DateTime? @db.Timestamp(6)
+  deleted_by        String?   @db.VarChar(255)
+
+  @@id([geometry_id, version])
+}
+
+model geometry_within_table {
+  geometry_id                                                             Bytes
+  geometry_id_within                                                      Bytes
+  geometry_area_within                                                    Float?
+  created_at                                                              DateTime       @default(now()) @db.Timestamp(6)
+  created_by                                                              String?        @db.VarChar(255)
+  updated_at                                                              DateTime?      @db.Timestamp(6)
+  updated_by                                                              String?        @db.VarChar(255)
+  geometry_table_geometry_within_table_geometry_idTogeometry_table        geometry_table @relation("geometry_within_table_geometry_idTogeometry_table", fields: [geometry_id], references: [geometry_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_geometry_within_table_1")
+  geometry_table_geometry_within_table_geometry_id_withinTogeometry_table geometry_table @relation("geometry_within_table_geometry_id_withinTogeometry_table", fields: [geometry_id_within], references: [geometry_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_geometry_within_table_2")
+
+  @@id([geometry_id, geometry_id_within])
+}
+
+model geometry_within_table_audit {
+  geometry_id          Bytes
+  geometry_id_within   Bytes
+  geometry_area_within Float?
+  created_at           DateTime  @db.Timestamp(6)
+  created_by           String?   @db.VarChar(255)
+  updated_at           DateTime? @db.Timestamp(6)
+  updated_by           String?   @db.VarChar(255)
+  deleted_at           DateTime? @db.Timestamp(6)
+  deleted_by           String?   @db.VarChar(255)
+
+  @@id([geometry_id, geometry_id_within])
+}
+
+model incoming_inventory {
+  quantity      Int?
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @default(now()) @db.Timestamp(6)
+  id            Int       @id(map: "PK_2d5aa67abbb31ffaacbff752fb5") @default(autoincrement())
+  location      String?   @db.VarChar
+  date          DateTime? @db.Date
+  currentStock  Int?
+  incomingStock Int?
+  productName   String?   @db.VarChar
+}
+
+model sales_forecast {
+  id       BigInt  @id @default(autoincrement())
+  date     String? @db.VarChar(255)
+  quantity Int
+  location String? @db.VarChar(255)
+}
+
+model sales_forecast_entity {
+  date                      String @id(map: "PK_658ca789da6cd320ad14b2db7dd") @db.VarChar
+  location                  String @db.VarChar
+  forecasted_sales_quantity Int
+}
+
+model scenario_table {
+  scenario_id  Bytes         @id
+  system_id    Bytes?
+  name         String        @db.VarChar(255)
+  created_at   DateTime?     @db.Timestamp(6)
+  created_by   String?       @db.VarChar(255)
+  updated_at   DateTime?     @db.Timestamp(6)
+  updated_by   String?       @db.VarChar(255)
+  system_table system_table? @relation(fields: [system_id], references: [system_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_scenario_table_system_table")
+}
+
+model scenario_table_audit {
+  scenario_id Bytes
+  version     Int
+  system_id   Bytes?
+  name        String    @db.VarChar(255)
+  created_at  DateTime? @db.Timestamp(6)
+  created_by  String?   @db.VarChar(255)
+  updated_at  DateTime? @db.Timestamp(6)
+  updated_by  String?   @db.VarChar(255)
+  deleted_at  DateTime? @db.Timestamp(6)
+  deleted_by  String?   @db.VarChar(255)
+
+  @@id([scenario_id, version])
+}
+
+model system_geometry_table {
+  system_id      Bytes          @id
+  geometry_id    Bytes
+  created_at     DateTime       @default(now()) @db.Timestamp(6)
+  created_by     String?        @db.VarChar(255)
+  updated_at     DateTime?      @db.Timestamp(6)
+  updated_by     String?        @db.VarChar(255)
+  geometry_table geometry_table @relation(fields: [geometry_id], references: [geometry_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_system_geometry_table_geometry_table1")
+  system_table   system_table   @relation(fields: [system_id], references: [system_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_system_geometry_table_system_table1")
+}
+
+model system_geometry_table_audit {
+  system_id   Bytes
+  geometry_id Bytes
+  version     Int
+  created_at  DateTime  @db.Timestamp(6)
+  created_by  String?   @db.VarChar(255)
+  updated_at  DateTime? @db.Timestamp(6)
+  updated_by  String?   @db.VarChar(255)
+  deleted_at  DateTime? @db.Timestamp(6)
+  deleted_by  String?   @db.VarChar(255)
+
+  @@id([system_id, version])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model system_table {
+  system_id             Bytes                  @id(map: "unique_system_id")
+  name                  String                 @db.VarChar(255)
+  status                String                 @db.VarChar(255)
+  unit                  String                 @db.VarChar(255)
+  properties            Json
+  created_at            DateTime?              @db.Timestamp(6)
+  created_by            String?                @db.VarChar(255)
+  updated_at            DateTime?              @db.Timestamp(6)
+  updated_by            String?                @db.VarChar(255)
+  energy_balance_table  energy_balance_table[]
+  geometry_table        geometry_table[]
+  scenario_table        scenario_table[]
+  system_geometry_table system_geometry_table?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model system_table_audit {
+  system_id  Bytes
+  version    Int
+  name       String    @db.VarChar(255)
+  status     String    @db.VarChar(255)
+  unit       String    @db.VarChar(255)
+  properties Json
+  created_at DateTime? @db.Timestamp(6)
+  created_by String?   @db.VarChar(255)
+  updated_at DateTime? @db.Timestamp(6)
+  updated_by String?   @db.VarChar(255)
+  deleted_at DateTime? @db.Timestamp(6)
+  deleted_by String?   @db.VarChar(255)
+
+  @@id([system_id, version], map: "unique_system_history_id")
+}
+
+model tech_table {
+  tech_id        Bytes     @id
+  tech_id_parent Bytes?
+  abbr           String    @db.VarChar(255)
+  name           Json
+  properties     Json
+  created_at     DateTime? @db.Timestamp(6)
+  created_by     String?   @db.VarChar(255)
+  updated_at     DateTime? @db.Timestamp(6)
+  updated_by     String?   @db.VarChar(255)
+}
+
+model tech_table_audit {
+  tech_id        Bytes
+  tech_id_parent Bytes?
+  version        Int
+  abbr           String    @db.VarChar(255)
+  name           Json
+  properties     Json
+  created_at     DateTime? @db.Timestamp(6)
+  created_by     String?   @db.VarChar(255)
+  updated_at     DateTime? @db.Timestamp(6)
+  updated_by     String?   @db.VarChar(255)
+  deleted_at     DateTime? @db.Timestamp(6)
+  deleted_by     String?   @db.VarChar(255)
+
+  @@id([tech_id, version])
+}
+
+model tutorials {
+  id          BigInt   @id
+  description String?  @db.VarChar(255)
+  published   Boolean?
+  title       String?  @db.VarChar(255)
+}
+
+model user {
+  id        Int    @id(map: "PK_cace4a159ff9f2512dd42373760") @default(autoincrement())
+  firstName String @db.VarChar
+  lastName  String @db.VarChar
+  age       Int
+}

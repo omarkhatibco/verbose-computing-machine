@@ -18,6 +18,18 @@
           "buildTarget": "api:build:production"
         }
       }
+    },
+    "prisma:pull": {
+      "command": "prisma db pull",
+      "options": {
+        "cwd": "apps/api"
+      }
+    },
+    "prisma:generate": {
+      "command": "prisma generate",
+      "options": {
+        "cwd": "apps/api"
+      }
     }
   },
   "tags": []
