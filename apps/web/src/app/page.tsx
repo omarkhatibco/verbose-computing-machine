@@ -32,7 +32,6 @@ export default async function Index() {
 
   return (
     <Container
-      h='100dvh'
       maxW='container.xl'
       alignItems={'center'}
       display='flex'
