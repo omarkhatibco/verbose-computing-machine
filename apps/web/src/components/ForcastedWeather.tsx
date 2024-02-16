@@ -11,11 +11,6 @@ type Props = {
 }
 
 export const ForcastedWeather: FC<Props> = async ({ cityName, firstDate, endDate }) => {
-  console.log({
-    cityName,
-    firstDate,
-    endDate,
-  })
   const weather = await getWeather({ cityName, firstDate, endDate })
 
   return (

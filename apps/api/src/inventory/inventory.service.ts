@@ -27,7 +27,7 @@ export class InventoryService {
       where: { id },
       data: { currentStock: Number(currentStock) },
     })
-    console.log(newData)
+
     return newData
   }
 
