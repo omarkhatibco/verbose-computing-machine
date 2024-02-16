@@ -53,6 +53,9 @@ dependencies:
   tslib:
     specifier: ^2.6.2
     version: 2.6.2
+  wretch:
+    specifier: ^2.8.0
+    version: 2.8.0
 
 devDependencies:
   '@ianvs/prettier-plugin-sort-imports':
@@ -12446,6 +12449,11 @@ packages:
   /wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
+
+  /wretch@2.8.0:
+    resolution: {integrity: sha512-MNYh+lukFfFgcmVpvxv0KsQt2LtAPvKFfLNcLGpCMiHTD3ndSoQ3/k5fGOCPI1J7CgN1mYAbp9mhPFFUGTzUeg==}
+    engines: {node: '>=14'}
+    dev: false
 
   /write-file-atomic@4.0.2:
     resolution: {integrity: sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==}

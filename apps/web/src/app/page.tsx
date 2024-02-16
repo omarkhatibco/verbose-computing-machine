@@ -12,12 +12,24 @@ import {
   Text,
 } from '@chakra-ui/react'
 
-export default function Index() {
-  /*
-   * Replace the elements below with your own.
-   *
-   * Note: The corresponding styles are in the ./index.@emotion/styled file.
-   */
+import { CityPanel } from '../components'
+import { getForcasts, getInventories } from '../fetchers'
+
+const cites = {
+  hamburg: {
+    weatherName: 'Hamburg',
+    backendName: 'Beachside',
+  },
+  munich: {
+    weatherName: 'Munich',
+    backendName: 'City Center',
+  },
+}
+
+export default async function Index() {
+  const inventories = await getInventories()
+  const forcasts = await getForcasts()
+
   return (
     <Container
       h='100dvh'
@@ -32,17 +44,18 @@ export default function Index() {
         <CardBody>
           <Tabs>
             <TabList>
-              <Tab>Hamburg</Tab>
-              <Tab>Munich</Tab>
+              {Object.entries(cites).map(([key, value]) => (
+                <Tab key={key}>{value.weatherName}</Tab>
+              ))}
             </TabList>
 
             <TabPanels>
-              <TabPanel>
-                <p>one!</p>
-              </TabPanel>
-              <TabPanel>
-                <p>2!</p>
-              </TabPanel>
+              {Object.entries(cites).map(([key, value]) => (
+                <CityPanel
+                  forcast={forcasts?.find(item => item.location === value.backendName)}
+                  inventory={inventories?.find(item => item.location === value.backendName)}
+                />
+              ))}
             </TabPanels>
           </Tabs>
         </CardBody>
